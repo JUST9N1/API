@@ -7,6 +7,9 @@ const dotenv = require('dotenv');
 // Creating an express app
 const app = express();
 
+// Express Json Config
+app.use(express.json())
+
 // Connecting to database
 connectDatabase()
 
@@ -33,6 +36,7 @@ app.use('/api/user', require('./routes/userRoutes'))
 // http://localhost:5000/api/user/create
 
 // Starting the server
+
 app.listen(PORT, ()=>{
     console.log(`Server is Running on port ${PORT}!`)
 })
