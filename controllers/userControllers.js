@@ -30,7 +30,7 @@ const createUser = async (req, res) => {
         // 5.1 if user found: Send response 
         if (existingUser) {
             return res.json({
-                "status": false,
+                "success": false,
                 "message": "User Already Exists!"
             })
         }

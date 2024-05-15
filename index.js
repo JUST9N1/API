@@ -3,9 +3,18 @@
 const express = require('express');
 const connectDatabase = require('./database/database');
 const dotenv = require('dotenv');
+const cors = require('cors')
 
 // Creating an express app
 const app = express();
+
+// Configure Cors Policy
+const corsOptions = {
+    origin: true,
+    credentials: true,
+    optionSuccessStatus: 200
+}
+app.use(cors(corsOptions))
 
 // Express Json Config
 app.use(express.json())
@@ -21,7 +30,7 @@ const PORT = process.env.PORT;
 // Making a test endpoint
 // Endpoints : POST, GET, PUT, DELETE
 
-app.get('/test', (req, res)=>{
+app.get('/test', (req, res) => {
     res.send("Test API is Woriking!.....")
 })
 
@@ -37,6 +46,6 @@ app.use('/api/user', require('./routes/userRoutes'))
 
 // Starting the server
 
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`Server is Running on port ${PORT}!`)
 })
