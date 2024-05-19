@@ -1,5 +1,8 @@
 const userModel = require('../models/userModel')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
+
 const createUser = async (req, res) => {
 
     // 1. Check incoming data
@@ -76,44 +79,82 @@ const createUser = async (req, res) => {
     // 5.2.4 
 
 }
-// write a logic for login
-// const login = async (req, res) => {
-//     const { email, password } = req.body
 
-//     if (!email && !password) {
-//         return res
-//             .status(400)
-//             .json({ success: false, message: "Fill in all the required fields" })
-//     }
-//     try {
-//         const userExists = await User.findOne({ email })
-//         if (!userExists) {
-//             return res
-//                 .status(400)
-//                 .json({ success: false, message: "Invalid email address" })
-//         }
-//         // converrt the hassed  password using bcrypt
-//         const user = await bcrypt.compare(password, userExists.password)
-//         if (!user) {
-//             return res
-//                 .status(401)
-//                 .json({ success: false, message: "Invalid email or password!!" })
-//         } else {
-//             return res
-//                 .status(200)
-//                 .json({ success: true, message: "Logged in successfull!" })
-//         }
-//     } catch (error) {
-//         res
-//             .status(500)
-//         .json({ success: false, message: "Internal server error:${error}"})
-//     }
-// }
+//Login Function
+const loginUser = async (req, res) => {
 
 
+    //Check incoming data
+    console.log(req.body)
 
+    //Destructure
+    const {email, password} = req.body;
+
+
+    //Validation
+    if(!email || !password){
+        return res.json({
+            "success": false,
+            "message": "please enter all fields!"
+        })
+    }
+    //try catch
+    try{
+        // find user (email)
+        const user = await userModel.findOne({email: email})
+
+        // found data : firstName, lastName, email, password
+
+
+        // not found (error message)
+        if(!user){
+            return res.json({
+                "success": false,
+                "message": "User not exists!"
+            })
+        }
+        // compare password (bcrypt)
+        const isValidPassword = await bcrypt.compare(password, user.password);
+
+        //  not valid (error)
+        if(!isValidPassword){
+            return res.json({
+                "success" : false,
+                "message": "password not matched!"
+            })
+        }
+
+        // token (generate - user data + key)
+        const token = await jwt.sign(
+            {
+                id : user._id
+            },
+            process.env.JWT_SECRET
+        )
+
+
+        // response (token, user data)
+        res.json({
+            "success": true,
+           " message": "User Logged in Successful",
+           "token": token,
+           "userData": user
+        })
+
+
+
+    } catch (error) {
+        console.log(error)
+        return res.json({
+            "success": false,
+            "message": "Internal Server Error!"
+        })
+    }
+}
 
 // exporting
 module.exports = {
-    createUser
+    createUser,
+    loginUser
 }
+
